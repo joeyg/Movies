@@ -11,12 +11,19 @@ import UIKit
 
 class MoviesViewController : ViewController, UITableViewDataSource, UITableViewDelegate {
     private var movies: NSArray = NSArray()
-    
+    private var refreshControl: UIRefreshControl!
     
     @IBOutlet weak var tableView: UITableView!
     
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.title = "Movies"
+        
+        refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: "onRefresh", forControlEvents: UIControlEvents.ValueChanged)
+        tableView.insertSubview(refreshControl, atIndex: 0)
         
         tableView.dataSource = self
         tableView.delegate = self
@@ -52,7 +59,13 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         cell.titleLabel.text = movie["title"] as? String
         cell.synopsisLabel.text = movie["synopsis"] as? String
     
-        let url = movie.valueForKeyPath("posters.thumbnail") as! String
+        var url = movie.valueForKeyPath("posters.thumbnail") as! String
+        
+        var range = url.rangeOfString(".*cloudfront.net/", options: .RegularExpressionSearch)
+        if let range = range {
+            url = url.stringByReplacingCharactersInRange(range, withString: "https://content6.flixster.com/")
+        }
+        
         cell.posterImageView.setImageWithURL(NSURL(string:url))
         
         return cell
@@ -75,5 +88,20 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         let movie = self.movies[indexPath!.row] as! NSDictionary
         
         detailViewController.movie = movie
+    }
+    
+    func delay(delay:Double, closure:()->()) {
+        dispatch_after(
+            dispatch_time(
+                DISPATCH_TIME_NOW,
+                Int64(delay * Double(NSEC_PER_SEC))
+            ),
+            dispatch_get_main_queue(), closure)
+    }
+    
+    func onRefresh() {
+        delay(2, closure: {
+            self.refreshControl.endRefreshing()
+        })
     }
 }
