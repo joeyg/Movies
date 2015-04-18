@@ -56,6 +56,16 @@
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
+                            <tabBar contentMode="scaleToFill" barStyle="black" id="P7k-P2-rfV">
+                                <rect key="frame" x="0.0" y="520" width="320" height="49"/>
+                                <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                                <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <items>
+                                    <tabBarItem title="DVD" image="dvd.png" id="Mtg-Wp-YDd"/>
+                                    <tabBarItem tag="1" title="Box Office" image="film.png" id="MEb-2F-6jt"/>
+                                </items>
+                                <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </tabBar>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
@@ -63,6 +73,7 @@
                         <nil key="title"/>
                     </navigationItem>
                     <connections>
+                        <outlet property="tabBar" destination="P7k-P2-rfV" id="laU-sI-yrb"/>
                         <outlet property="tableView" destination="cGw-5j-fML" id="j3n-IZ-oca"/>
                     </connections>
                 </viewController>
@@ -147,6 +158,10 @@
             <point key="canvasLocation" x="251.19999999999999" y="-313.34666666666664"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="dvd.png" width="24" height="24"/>
+        <image name="film.png" width="24" height="24"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

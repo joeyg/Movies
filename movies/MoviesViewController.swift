@@ -9,12 +9,14 @@
 import Foundation
 import UIKit
 
-class MoviesViewController : ViewController, UITableViewDataSource, UITableViewDelegate {
+class MoviesViewController : ViewController, UITableViewDataSource, UITableViewDelegate, UITabBarDelegate {
     private var movies: NSArray = NSArray()
     private var refreshControl: UIRefreshControl!
     
+    @IBOutlet weak var tabBar: UITabBar!
     @IBOutlet weak var tableView: UITableView!
     
+    private var displayingDVDs = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -28,15 +30,17 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         
         tableView.dataSource = self
         tableView.delegate = self
-        
-        let YourApiKey = "dagqdghwaq3e3mxyrp7kmmj5" // Fill with the key you registered at http://developer.rottentomatoes.com
-        let RottenTomatoesURLString = "http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json?apikey=" + YourApiKey
-        
-        let url = NSURL(string:RottenTomatoesURLString)
+        tabBar.delegate = self
+ 
+        loadData()
+    }
+    
+    private func loadData() {
+        let url = NSURL(string:self.getAPIURL())
         let request = NSMutableURLRequest(URL: url!)
         
         SVProgressHUD.show()
-    
+        
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler:{ (response, data, error) in
             var errorValue: NSError? = nil
             
@@ -51,6 +55,17 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
             self.movies = dictionary["movies"] as! NSArray
             self.tableView.reloadData()
         })
+    }
+    
+    private func getAPIURL() -> String {
+        var url = ""
+        if self.displayingDVDs {
+            url = "http://api.rottentomatoes.com/api/public/v1.0/lists/dvds/top_rentals.json"
+        } else {
+            url = "http://api.rottentomatoes.com/api/public/v1.0/lists/movies/box_office.json"
+        }
+        
+        return url + "?apikey=dagqdghwaq3e3mxyrp7kmmj5"
     }
     
     private func showError() {
@@ -109,6 +124,11 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         let movie = self.movies[indexPath!.row] as! NSDictionary
         
         detailViewController.movie = movie
+    }
+    
+    func tabBar(tabBar: UITabBar, didSelectItem item: UITabBarItem!) {
+        self.displayingDVDs = item.tag == 0
+        self.loadData()
     }
     
     func delay(delay:Double, closure:()->()) {
