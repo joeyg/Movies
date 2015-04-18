@@ -23,6 +23,7 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         
         refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: "onRefresh", forControlEvents: UIControlEvents.ValueChanged)
+        refreshControl.backgroundColor = UIColor.blackColor()
         tableView.insertSubview(refreshControl, atIndex: 0)
         
         tableView.dataSource = self
@@ -34,27 +35,40 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         let url = NSURL(string:RottenTomatoesURLString)
         let request = NSMutableURLRequest(URL: url!)
         
+        SVProgressHUD.show()
+    
         NSURLConnection.sendAsynchronousRequest(request, queue: NSOperationQueue.mainQueue(), completionHandler:{ (response, data, error) in
             var errorValue: NSError? = nil
             
+            SVProgressHUD.dismiss()
+            
+            if error != nil {
+                self.showError()
+                return
+            }
+            
             let dictionary = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &errorValue) as! NSDictionary
             self.movies = dictionary["movies"] as! NSArray
-//            if let self.movies = dictionary["movies"] {
-//                // cool code
-//            } else {
-//                // error handling
-//            }
-            
-//            let firstMovie = movies![0] as! NSDictionary
-//            println(firstMovie)
             self.tableView.reloadData()
-            
         })
+    }
+    
+    private func showError() {
+        var view = UIView(frame: CGRect(x:0, y:0, width:tableView.frame.width, height:20))
+        view.backgroundColor = UIColor.blackColor()
+        var label = UILabel(frame: view.frame)
+        label.text = "Network Error"
+        label.textAlignment = NSTextAlignment.Center
+        
+        label.textColor = UIColor.whiteColor()
+        
+        view.addSubview(label)
+        self.tableView.addSubview(view)
+        
     }
     
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("MovieCell", forIndexPath: indexPath) as! MovieCellTableViewCell
-//        cell.textLabel!.text = "Row \(indexPath.row)"
         let movie = movies[indexPath.row] as! NSDictionary
         cell.titleLabel.text = movie["title"] as? String
         cell.synopsisLabel.text = movie["synopsis"] as? String
@@ -67,6 +81,13 @@ class MoviesViewController : ViewController, UITableViewDataSource, UITableViewD
         }
         
         cell.posterImageView.setImageWithURL(NSURL(string:url))
+        cell.selectionStyle = UITableViewCellSelectionStyle.None
+        
+        if indexPath.row % 2 == 1 {
+            cell.backgroundColor = UIColor.darkGrayColor()
+        } else {
+            cell.backgroundColor = UIColor.blackColor()
+        }
         
         return cell
     }

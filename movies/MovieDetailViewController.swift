@@ -33,7 +33,7 @@ class MovieDetailViewController: UIViewController {
         let criticsScore = movie.valueForKeyPath("ratings.critics_score") as? Int
         let audienceScore = movie.valueForKeyPath("ratings.audience_score") as? Int
         
-        self.metadataLabel.text = "Critics Score \(criticsScore), Audience Score \(audienceScore)"
+        self.metadataLabel.text = "Critics Score \(criticsScore!), Audience Score \(audienceScore!)"
         
         var url = movie.valueForKeyPath("posters.detailed") as? String
         

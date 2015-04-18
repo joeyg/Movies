@@ -3,6 +3,7 @@
 
 target 'movies' do
   pod "AFNetworking"
+  pod 'SVProgressHUD'
 end
 
 target 'moviesTests' do
